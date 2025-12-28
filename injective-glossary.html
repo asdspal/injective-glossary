@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Injective Glossary | Ninja Break Build</title>
+    
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+
+    <style>
+        /* --- 1. Layout & Colors --- */
+        :root {
+            --bg-color: #121212; 
+            --text-white: #ffffff;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-white);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            z-index: 10;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin: 0;
+            letter-spacing: -1px;
+        }
+
+        /* --- 2. Card Dimensions & Container --- */
+        .swiper {
+            width: 100%;
+            max-width: 600px; /* Compact Landscape */
+            height: 350px;    /* Compact Height */
+            padding: 0 80px; /* Add side padding to ensure arrows fit outside */
+        }
+
+        .swiper-slide {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- 3. Card Styling --- */
+        .glossary-card {
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+            box-sizing: border-box;
+            text-align: left; 
+            transition: transform 0.3s ease;
+        }
+
+        .glossary-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 15px;
+        }
+
+        .term {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin: 0;
+            color: #ffffff;
+        }
+
+        .category {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            background: rgba(0,0,0,0.2);
+            padding: 5px 10px;
+            border-radius: 50px;
+            white-space: nowrap;
+        }
+
+        .definition {
+            font-size: 1.1rem;
+            line-height: 1.5;   
+            margin-top: 10px;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            color: #f0f0f0; 
+        }
+
+        /* --- 4. Navigation Arrows (OUTSIDE CARDS) --- */
+        .swiper-button-next, .swiper-button-prev {
+            color: #ffffff !important; 
+            background: rgba(255,255,255,0.1);
+            padding: 25px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+        
+        .swiper-button-next:hover, .swiper-button-prev:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .swiper-button-next:after, .swiper-button-prev:after {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* --- 5. Pagination Dots --- */
+        .swiper-pagination-bullet {
+            background: #ffffff;
+            opacity: 0;
+        }
+        .swiper-pagination-bullet-active {
+            background: #ffffff;
+            opacity: 0;
+        }
+        
+        /* Adjust for mobile screens to prevent overlap */
+        @media (max-width: 768px) {
+            .swiper { padding: 0 10px; }
+            .term { font-size: 1.4rem; }
+            .definition { font-size: 0.95rem; }
+            /* On mobile, arrows can overlap slightly or be hidden if too tight, 
+               but we will keep them visible */
+            .swiper-button-next, .swiper-button-prev {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Injective 101 <span style="font-weight:300; font-size: 1.5rem;">| Complete Glossary</span></h1>
+        <p style="color: #888;">51 Essential Terms • Use Arrow Keys to Navigate</p>
+    </header>
+
+    <!-- Swiper Container -->
+    <div class="swiper mySwiper">
+        <div class="swiper-wrapper" id="card-container">
+            <!-- Cards injected here via JS -->
+        </div>
+        
+        <!-- Navigation Arrows -->
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+        
+        <!-- Pagination Dots -->
+        <div class="swiper-pagination"></div>
+    </div>
+
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+    <script>
+        // --- 1. Data & Accessible Earthy Tones ---
+        const earthyColors = [
+            "#2E4600", "#4A3B32", "#263238", "#5D4037", "#1B3A4B", "#3E2723", "#37474F"
+        ];
+
+        // --- 2. THE 51 CARDS DATA ---
+        const glossaryData = [
+            { term: "Injective Protocol", def: "An open, interoperable layer-one blockchain built specifically for finance developers.", category: "Core" },
+            { term: "INJ Token", def: "The native utility asset used for governance, staking security, and transaction fees.", category: "Token" },
+            { term: "Cosmos SDK", def: "The framework used to build the Injective blockchain, enabling interoperability.", category: "Tech" },
+            { term: "Tendermint Core", def: "The consensus engine powering Injective, ensuring fast and secure transaction finality.", category: "Tech" },
+            { term: "CosmWasm", def: "The smart contract platform used on Injective for building dApps.", category: "Tech" },
+            { term: "IBC (Inter-Blockchain Communication)", def: "The protocol allowing Injective to transfer data and tokens with other Cosmos chains.", category: "Tech" },
+            { term: "Peggy Bridge", def: "A module enabling token transfers between Ethereum and Injective.", category: "Tool" },
+            { term: "Web3.gRPC", def: "A modern RPC standard used by Injective to improve speed and reduce data loads.", category: "Tech" },
+            { term: "EVM (Ethereum Virtual Machine)", def: "Injective supports EVM, allowing Solidity developers to deploy contracts easily.", category: "Tech" },
+            { term: "Perpetual Futures", def: "Futures contracts without an expiration date, popular for speculative trading.", category: "Trading" },
+            { term: "Spot Market", def: "A public financial market for buying and selling assets for immediate delivery.", category: "Trading" },
+            { term: "Order Book", def: "A list of buy and sell orders organized by price level.", category: "Trading" },
+            { term: "Limit Order", def: "An order to buy or sell at a specific price or better.", category: "Trading" },
+            { term: "Market Order", def: "An order to buy or sell immediately at the current best available price.", category: "Trading" },
+            { term: "Stop-Loss", def: "An order to sell a security when it reaches a certain price to limit loss.", category: "Trading" },
+            { term: "Leverage", def: "The use of borrowed funds to increase one's trading position beyond available cash.", category: "Trading" },
+            { term: "Margin", def: "The collateral required to open and maintain a leveraged position.", category: "Trading" },
+            { term: "Liquidation", def: "The closing of a leveraged position by the exchange due to insufficient margin.", category: "Trading" },
+            { term: "Oracle", def: "A service providing external price data to the blockchain.", category: "Tech" },
+            { term: "Band Protocol", def: "The decentralized oracle provider used by Injective for price feeds.", category: "Tech" },
+            { term: "Indexer", def: "A service that organizes blockchain data for easy querying by front-ends.", category: "Tech" },
+            { term: "Gas Fees", def: "Fees paid to network validators to process transactions.", category: "General" },
+            { term: "Staking", def: "Locking up INJ to help secure the network and earn rewards.", category: "Token" },
+            { term: "Unbonding", def: "The waiting period (21 days) to unstake tokens after deciding to stop staking.", category: "Token" },
+            { term: "Validator", def: "A node operator responsible for verifying transactions and adding blocks.", category: "Network" },
+            { term: "Delegator", def: "An INJ holder who stakes their tokens to a validator to earn a share of rewards.", category: "Network" },
+            { term: "APY (Annual Percentage Yield)", def: "The rate of return earned on staked tokens over a year.", category: "Economics" },
+            { term: "Governance", def: "The process by which INJ holders vote on protocol changes.", category: "Governance" },
+            { term: "DAO (Decentralized Autonomous Organization)", def: "Injective is governed by a community-run DAO.", category: "Governance" },
+            { term: "Proposal", def: "A formal suggestion for changing parameters of the Injective network.", category: "Governance" },
+            { term: "Minting", def: "The process of creating new tokens.", category: "Economics" },
+            { term: "Burning", def: "Permanently removing tokens from circulation to reduce supply.", category: "Economics" },
+            { term: "Deflationary", def: "An economic model where the supply of tokens decreases over time.", category: "Economics" },
+            { term: "Arbitrage", def: "Profiting from price differences of the same asset on different markets.", category: "Trading" },
+            { term: "Slippage", def: "The difference between the expected price and the actual execution price.", category: "Trading" },
+            { term: "Liquidity", def: "The ease with which an asset can be converted into cash without affecting price.", category: "Trading" },
+            { term: "Market Maker", def: "A trader who places limit orders to provide liquidity to the market.", category: "Trading" },
+            { term: "Taker", def: "A trader who places market orders that take existing liquidity.", category: "Trading" },
+            { term: "Insurance Fund", def: "A pool of funds used to cover deficits from liquidations.", category: "Trading" },
+            { term: "Keplr Wallet", def: "The premier wallet for the Cosmos ecosystem, supporting Injective.", category: "Wallet" },
+            { term: "Leap Wallet", def: "A modern, user-friendly wallet for Cosmos chains including Injective.", category: "Wallet" },
+            { term: "Metamask", def: "A popular Ethereum wallet compatible with Injective's EVM support.", category: "Wallet" },
+            { term: "Hardware Wallet", def: "A physical device (like Ledger) for storing keys offline.", category: "Wallet" },
+            { term: "Seed Phrase", def: "A list of words used to recover a crypto wallet.", category: "Security" },
+            { term: "Airdrop", def: "A distribution of free tokens to the community, often for marketing.", category: "General" },
+            { term: "Layer 1 (L1)", def: "A base blockchain like Injective, Bitcoin, or Ethereum.", category: "Tech" },
+            { term: "dApp", def: "Decentralized application running on a blockchain network.", category: "General" },
+            { term: "Smart Contract", def: "Self-executing code on the blockchain that enforces agreements.", category: "Tech" },
+            { term: "Block Height", def: "The number of blocks preceding a specific block in the blockchain.", category: "Tech" },
+            { term: "Finality", def: "The assurance that a transaction cannot be reversed or altered.", category: "Tech" },
+            { term: "Epoch", def: "A fixed period of time used for validator rotation and rewards distribution.", category: "Network" }
+        ];
+
+        // --- 3. Generate Cards ---
+        const container = document.getElementById('card-container');
+
+        glossaryData.forEach((item, index) => {
+            const color = earthyColors[index % earthyColors.length];
+            
+            const slide = document.createElement('div');
+            slide.className = 'swiper-slide';
+            
+            slide.innerHTML = `
+                <div class="glossary-card" style="background-color: ${color};">
+                    <div class="card-header">
+                        <h2 class="term">${item.term}</h2>
+                        <span class="category">${item.category}</span>
+                    </div>
+                    <p class="definition">${item.def}</p>
+                </div>
+            `;
+            container.appendChild(slide);
+        });
+
+        // --- 4. Initialize Swiper ---
+        const swiper = new Swiper(".mySwiper", {
+            grabCursor: true,
+            loop: false,
+            spaceBetween: 50,
+            
+            // Keyboard
+            keyboard: {
+                enabled: true,
+                onlyInViewport: true,
+            },
+
+            // Arrows
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+
+            // Pagination
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+            
+            effect: "slide", 
+            speed: 400,
+        });
+    </script>
+</body>
+</html>
